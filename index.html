@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>數位署長筆記本｜農村發展及水土保持署</title>
+<style>
+:root{
+  --navy:#0E2A47; --navy-2:#123B63; --navy-3:#1B4E7E;
+  --ink:#1C2B3A; --muted:#5B7085; --line:#D8E2EC;
+  --bg:#F2F6FA; --card:#FFFFFF;
+  --gold:#C9A227; --alert:#B23A3A; --ok:#2E7D5B;
+  --radius:14px; --shadow:0 2px 10px rgba(14,42,71,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.55;
+  padding-bottom:70px;
+}
+/* ===== 頂部固定區（單一sticky容器，避免手機換行後互相遮蓋） ===== */
+#topStick{position:sticky;top:0;z-index:50}
+header{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+  color:#fff; padding:10px 16px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:150px}
+.brand b{font-size:1.05rem;letter-spacing:.06em}
+.brand span{font-size:.68rem;opacity:.75;letter-spacing:.12em}
+.searchbox{
+  flex:1;min-width:200px;display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;padding:8px 14px;
+}
+.searchbox input{
+  flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;min-height:28px;
+}
+.searchbox input::placeholder{color:rgba(255,255,255,.65)}
+.userchip{font-size:.8rem;background:rgba(255,255,255,.14);padding:6px 12px;border-radius:999px;white-space:nowrap}
+/* ===== 導覽列 ===== */
+nav{
+  background:#fff;border-bottom:1px solid var(--line);
+  display:flex;overflow-x:auto;scrollbar-width:none;
+}
+/* 手機：壓縮頂部高度，避免固定區佔版 */
+@media(max-width:640px){
+  .brand span{display:none}
+  .userchip{display:none}
+  header{padding:8px 12px;gap:8px}
+  .brand{min-width:auto}
+  .searchbox{min-width:140px;padding:6px 12px}
+}
+/* 觸控最佳化：消除雙擊縮放攔截與點擊延遲 */
+button,select,input,.src,.acc,.ev,.chip,.mode,nav button{touch-action:manipulation}
+nav::-webkit-scrollbar{display:none}
+nav button{
+  flex:1;min-width:86px;min-height:48px;border:none;background:none;cursor:pointer;
+  font-size:.9rem;color:var(--muted);font-weight:500;
+  border-bottom:3px solid transparent;font-family:inherit;white-space:nowrap;padding:0 8px;
+}
+nav button.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:700}
+/* ===== 資料版本列 ===== */
+.vbar{
+  background:#EAF1F8;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:8px 16px;font-size:.82rem;color:var(--navy);
+}
+.vbar b{font-weight:800}
+.vbar select{min-height:40px}
+.vbar .cut{color:var(--muted)}
+main{max-width:1080px;margin:0 auto;padding:18px 16px}
+section.page{display:none}
+section.page.show{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){section.page.show{animation:none}}
+/* ===== 通用元件 ===== */
+h2.sec{
+  font-size:.82rem;color:var(--navy);letter-spacing:.18em;font-weight:700;
+  margin:22px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+h2.sec::before{content:"";width:4px;height:16px;background:var(--gold);border-radius:2px}
+h2.sec small{font-weight:400;letter-spacing:0;color:var(--muted)}
+.grp{font-size:.76rem;color:var(--muted);font-weight:700;letter-spacing:.14em;margin:16px 0 8px;display:flex;align-items:center;gap:6px}
+.grp::before{content:"";width:10px;height:2px;background:var(--gold);border-radius:1px}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.g4,.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:14px 16px;
+}
+.kpi .lab{font-size:.78rem;color:var(--muted)}
+.kpi .num{font-size:1.75rem;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi .num small{font-size:.85rem;font-weight:600;color:var(--muted)}
+.trend{font-size:.74rem;font-weight:600;margin-top:2px}
+.trend.up{color:var(--alert)} .trend.down{color:var(--ok)} .trend.flat{color:var(--muted)}
+.src{
+  display:inline-block;margin-top:8px;font-size:.68rem;color:var(--navy-3);
+  background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;
+  cursor:pointer;min-height:26px;
+}
+.src:active{background:#E2ECF5}
+.badge{display:inline-block;font-size:.68rem;font-weight:700;border-radius:6px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.badge.hot{background:#FBEAEA;color:var(--alert)}
+.badge.ok{background:#E7F3EE;color:var(--ok)}
+.badge.warn{background:#FCF3DB;color:#8A6D0B}
+.badge.na{background:#EDEFF2;color:var(--muted)}
+.na-text{color:var(--muted);font-size:.85rem}
+/* 可展開卡 */
+.acc{cursor:pointer;user-select:none;transition:box-shadow .15s}
+.acc:active{box-shadow:0 1px 4px rgba(14,42,71,.15)}
+.acc .head{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px}
+.acc .head h3{font-size:.98rem;color:var(--navy)}
+.acc .chev{color:var(--muted);transition:transform .2s;font-size:.9rem}
+.acc.open .chev{transform:rotate(90deg)}
+.acc .body{display:none;border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;font-size:.9rem}
+.acc.open .body{display:block}
+/* 情境模式 */
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+@media(max-width:640px){.modes{grid-template-columns:repeat(3,1fr)}}
+.mode{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 6px;text-align:center;cursor:pointer;min-height:76px;box-shadow:var(--shadow);
+  font-family:inherit;font-size:.85rem;color:var(--navy);font-weight:600;
+}
+.mode span{display:block;font-size:1.5rem;margin-bottom:4px}
+.mode:active{background:var(--bg)}
+/* 數字帶 */
+.strip{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.chip{
+  flex:0 0 auto;background:var(--navy);color:#fff;border-radius:12px;padding:10px 16px;min-width:158px;
+  cursor:pointer;border:none;font-family:inherit;text-align:left;
+}
+.chip .n{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums}
+.chip .l{font-size:.72rem;opacity:.8}
+.chip .d{font-size:.62rem;opacity:.6;margin-top:2px}
+/* 情資卡 */
+.intel{border-left:4px solid var(--navy-3)}
+.intel.warn{border-left-color:var(--gold)}
+.intel.ext{border-left-color:#9AA7B4;background:#F6F8FA;border-style:dashed}
+.intel .t{font-size:.75rem;color:var(--muted)}
+.intel .v{font-size:.98rem;font-weight:700;color:var(--navy);margin-top:2px}
+/* 備詢卡 */
+.qa .q{font-weight:700;color:var(--navy)}
+.qa .ans{
+  background:#F0F5FB;border-left:4px solid var(--navy-3);border-radius:8px;
+  padding:10px 12px;margin:10px 0;font-weight:700;font-size:1rem;
+}
+.qa .nums{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.qa .nums div{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;text-align:center}
+.qa .nums b{display:block;font-size:1.05rem;color:var(--navy);font-variant-numeric:tabular-nums}
+.qa .nums span{font-size:.7rem;color:var(--muted)}
+.tone{font-size:.85rem;background:#FCF9EF;border:1px solid #EADFB8;border-radius:8px;padding:8px 12px;margin-bottom:6px}
+.tone b{color:#8A6D0B}
+.note{font-size:.84rem;color:var(--ink);margin:6px 0}
+/* 篩選 chips */
+.fchips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.fchips button{
+  border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;
+  font-family:inherit;font-size:.82rem;color:var(--muted);cursor:pointer;min-height:40px;
+}
+.fchips button.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}
+/* 搜尋結果 */
+#answerBox{display:none;margin-bottom:14px}
+#answerBox .card{border-left:5px solid var(--gold)}
+.hl{background:#FCF3DB;border-radius:3px;padding:0 2px}
+select{
+  font-family:inherit;font-size:16px;padding:8px 12px;border-radius:8px;
+  border:1px solid var(--line);background:#fff;color:var(--navy);min-height:44px;
+}
+.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--navy-3),var(--navy));border-radius:5px}
+.bar i.gold{background:linear-gradient(90deg,#D8B93F,var(--gold))}
+/* 時間軸 */
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .ev{position:relative;margin-bottom:14px;cursor:pointer}
+.tl .ev::before{content:"";position:absolute;left:-19px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 0 0 2px var(--gold)}
+.tl .ev.cur::before{background:var(--navy);box-shadow:0 0 0 2px var(--navy)}
+.tl .ev .y{font-size:.75rem;font-weight:800;color:var(--navy-3);letter-spacing:.05em}
+.tl .ev .tt{font-weight:700;color:var(--navy);font-size:.92rem}
+.tl .ev .d{font-size:.82rem;color:var(--muted)}
+/* 比較 */
+.cmpRow{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px dashed var(--line);padding:9px 0;font-size:.88rem;flex-wrap:wrap}
+.cmpRow .nm{flex:1;min-width:140px;color:var(--ink)}
+.cmpRow .vv{display:flex;gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+.cmpRow .a{color:var(--muted)} .cmpRow .b{font-weight:800;color:var(--navy)}
+.delta{font-size:.74rem;font-weight:700;border-radius:6px;padding:2px 6px}
+.delta.up{background:#FBEAEA;color:var(--alert)} .delta.dn{background:#E7F3EE;color:var(--ok)} .delta.eq{background:#EDEFF2;color:var(--muted)}
+/* 來源面板 */
+#modalBg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(14,42,71,.45);z-index:80}
+#modal{
+  display:none;position:fixed;z-index:90;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(92vw,560px);max-height:80vh;overflow:auto;background:#fff;border-radius:16px;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);padding:18px 20px;
+}
+#modal h4{color:var(--navy);font-size:1rem;margin-bottom:8px;padding-right:40px}
+#modal .row{display:flex;gap:8px;font-size:.85rem;margin:4px 0}
+#modal .row b{min-width:76px;color:var(--muted);font-weight:600}
+#modal .ex{background:var(--bg);border-left:3px solid var(--gold);border-radius:8px;padding:10px 12px;font-size:.85rem;margin-top:10px;color:var(--ink)}
+#mClose{position:absolute;right:12px;top:10px;border:none;background:var(--bg);border-radius:50%;width:36px;height:36px;font-size:1rem;cursor:pointer;color:var(--navy)}
+.mono{font-variant-numeric:tabular-nums}
+footer{
+  position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;
+  font-size:.7rem;text-align:center;padding:9px 12px;letter-spacing:.05em;z-index:60;
+}
+.empty{color:var(--muted);font-size:.9rem;padding:20px;text-align:center}
+.mini{font-size:.78rem;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div id="topStick">
+<header>
+  <div class="brand"><b>數位署長筆記本</b><span>ARDSWC EXECUTIVE BRIEF</span></div>
+  <div class="searchbox">
+    <span>🔍</span>
+    <input id="q" type="search" placeholder="輸入關鍵字，如：潛勢溪流、預算、光電、修法…" autocomplete="off">
+  </div>
+  <div class="userchip">陳署長 ▾</div>
+</header>
+
+<nav id="nav">
+  <button data-p="home" class="active">首頁</button>
+  <button data-p="biz">業務查詢</button>
+  <button data-p="kpi">KPI 查詢</button>
+  <!-- 暫停：國際合作/備詢題庫頁籤（第三階段任務2），保留原始碼供日後恢復
+  <button data-p="intl">國際合作</button>
+  <button data-p="qa">備詢題庫</button>
+  -->
+  <button data-p="cmp">版本比較</button>
+  <button data-p="search">搜尋結果</button>
+</nav>
+
+<div class="vbar">
+  <span>📓 資料版本</span>
+  <select id="verSel" onchange="setVersion(this.value)"></select>
+  <span class="cut" id="verCut"></span>
+</div>
+</div><!-- /topStick -->
+
+<main>
+
+<!-- ============ 首頁 ============ -->
+<section id="p-home" class="page show">
+  <h2 class="sec">最新資料版本</h2>
+  <div class="grid g4" id="verInfo"></div>
+
+  <h2 class="sec">本期重點議題 <small id="hlDate"></small></h2>
+  <div class="grid g2" id="highlights"></div>
+
+  <h2 class="sec">近期外部關注事件 <span class="badge na">與正式知識庫區隔</span></h2>
+  <div class="card intel ext">
+    <div class="t">事件：颱風及豪雨最新災情動態</div>
+    <div class="v">尚無署內正式資料</div>
+    <div class="mini" style="margin-top:4px">說明：本系統僅收錄已納入之署內正式文件；即時災情、警戒與應變資訊待後續正式資料納入後更新，請以土石流及大規模崩塌防災資訊網（246.ardswc.gov.tw）發布為準。</div>
+  </div>
+
+  <h2 class="sec">情境模式</h2>
+  <div class="modes">
+    <!-- 暫停：備詢/媒體/外賓模式（對應頁面暫停中），保留原始碼供日後恢復
+    <button class="mode" onclick="go('qa')"><span>🏛</span>備詢模式</button>
+    <button class="mode" onclick="go('qa');setTopic('立院關注')"><span>🎤</span>媒體模式</button>
+    <button class="mode" onclick="go('intl')"><span>🌏</span>外賓模式</button>
+    -->
+    <button class="mode" onclick="go('biz')"><span>🚁</span>視察模式</button>
+    <button class="mode" onclick="focusSearch()"><span>⚡</span>快查模式</button>
+  </div>
+
+  <h2 class="sec">關鍵數字帶 <small>點卡查看來源</small></h2>
+  <div class="strip" id="strip"></div>
+
+  <!-- 暫停：常用備詢問題快捷（備詢題庫頁暫停中），保留原始碼供日後恢復
+  <h2 class="sec">常用備詢問題</h2>
+  <div class="fchips" id="quickQ"></div>
+  -->
+
+  <h2 class="sec">預算執行摘要 <small>單位：億元｜點入 KPI 頁看全表</small></h2>
+  <div class="card">
+    <div class="filterbar" id="budBtnHome"></div>
+    <div class="grid g3" id="budHome"></div>
+    <span class="src" onclick="showSrc('bud')">📎 查看資料來源</span>
+  </div>
+
+  <h2 class="sec">歷次版本時間軸</h2>
+  <div class="card"><div class="tl" id="verTl"></div></div>
+</section>
+
+<!-- ============ 業務查詢 ============ -->
+<section id="p-biz" class="page">
+  <h2 class="sec">業務查詢 <small>依業務主題分類｜點擊展開，內容隨資料版本切換</small></h2>
+  <div class="grid g2" id="bizList"></div>
+</section>
+
+<!-- ============ KPI ============ -->
+<section id="p-kpi" class="page">
+  <h2 class="sec">KPI 查詢 <small>數字隨上方資料版本切換，並與前一期比較</small></h2>
+  <div class="grp">坡地防災與坡地管理</div>
+  <div class="grid g4" id="kpiCards"></div>
+  <div class="grp">農村發展與休閒產業</div>
+  <div class="grid g4" id="kpiRural"></div>
+
+  <h2 class="sec">預算執行情形 <small>依附錄一總表，可切換月份</small></h2>
+  <div class="filterbar" id="budBtn"></div>
+  <div class="grid g4" id="budKpi"></div>
+  <div class="card" style="margin-top:12px">
+    <div id="budgetBars"></div>
+    <span class="src" onclick="showSrc('bud')">📎 查看資料來源</span>
+  </div>
+
+  <h2 class="sec">工程核定與決標率 <small>不含丹娜絲重建；丹娜絲另列</small></h2>
+  <div class="grid g2" id="projRate"></div>
+</section>
+
+<!-- ============ 國際合作 ============ -->
+<!-- 暫停：國際合作頁（第三階段任務2），內容完整保留；恢復方式：移除本區 hidden 屬性並取消導覽列按鈕註解 -->
+<section id="p-intl" class="page" hidden>
+  <h2 class="sec">國際合作 <small>依已納入之正式文件</small></h2>
+  <div class="card qa" style="margin-bottom:12px">
+    <div class="q">臺灣里山生態農村實踐計畫｜國際里山倡議夥伴（IPSI）</div>
+    <div class="ans">本署自 106 年 6 月 22 日成為國際里山倡議夥伴關係（IPSI）成員；全國 80 處潛力社區已有 13 處登上 IPSI 刊出社區案例。</div>
+    <div class="nums">
+      <div><b class="mono">106 年</b><span>加入 IPSI</span></div>
+      <div><b class="mono">80 處</b><span>潛力社區</span></div>
+      <div><b class="mono">13 處</b><span>IPSI 刊出案例</span></div>
+    </div>
+    <div class="note">刊出案例含：新北三芝共榮（2018）、花蓮豐濱復興部落（2019）、臺東東河尚德（2019）、南投埔里一新（2021）、苗栗三義鯉魚（2021）、臺中豐原公老坪（2021）、臺中霧峰五福（2022）、苗栗通霄新埔（2023）、澎湖奎壁澳里海（2023）、新竹北埔南埔（2024）、屏東牡丹高士（2025）、苗栗市南勢（2025）等。</div>
+    <span class="src" onclick="showSrc('satoyama')">📎 查看資料來源</span>
+  </div>
+  <div class="card intel ext">
+    <div class="t">其他雙邊合作、MOU 與國際研討會成果</div>
+    <div class="v">目前提供資料未包含此項資訊</div>
+    <div class="mini" style="margin-top:4px">本期收錄之署長筆記本、預算執行表及立法院談參資料中，未載其他國際合作案內容；待相關正式文件納入後更新。原示範版之外賓英文卡因文件未支持英文摘要，暫不提供。</div>
+  </div>
+</section>
+
+<!-- ============ 備詢題庫 ============ -->
+<!-- 暫停：備詢題庫頁（第三階段任務2），內容完整保留；恢復方式：移除本區 hidden 屬性並取消導覽列/情境模式/常用問題註解 -->
+<section id="p-qa" class="page" hidden>
+  <h2 class="sec">備詢題庫 <span class="badge warn">內部限定</span> <small>🔥＝文件載明立法院／院層級關注</small></h2>
+  <div class="fchips" id="qaTopics"></div>
+  <div id="qaList"></div>
+</section>
+
+<!-- ============ 版本比較 ============ -->
+<section id="p-cmp" class="page">
+  <h2 class="sec">版本比較 <small>選擇兩期署長筆記本</small></h2>
+  <div class="filterbar">
+    <select id="cmpA"></select>
+    <span style="color:var(--muted)">對比</span>
+    <select id="cmpB"></select>
+  </div>
+  <div id="cmpOut"></div>
+</section>
+
+<!-- ============ 搜尋結果 ============ -->
+<section id="p-search" class="page">
+  <h2 class="sec">搜尋結果</h2>
+  <div id="answerBox"></div>
+  <div id="results"><div class="empty">請於上方輸入關鍵字（試試：潛勢溪流、預算、決標率、光電、修法、野溪、田媽媽）</div></div>
+</section>
+
+</main>
+
+<div id="modalBg" onclick="closeSrc()"></div>
+<div id="modal">
+  <button id="mClose" onclick="closeSrc()">✕</button>
+  <div id="mBody"></div>
+</div>
+
+<footer>本系統僅引用已納入之署內正式文件，資料內容請以原始文件為準｜農業部農村發展及水土保持署</footer>
+
+<script>
+/* =====================================================================
+   資料層（僅引用已提供之署內正式文件；一源多用）
+   ===================================================================== */
+
+/* ---- 文件索引 documents ---- */
+const DOCS={
+ nb1:{name:"農村水保署筆記重點1150228（範本）",date:"115/02/28",type:"署長筆記本",cover:"截至115年1月31日"},
+ nb2:{name:"農村水保署筆記重點1150306（範本）",date:"115/03/06",type:"署長筆記本",cover:"截至115年2月28日"},
+ nb3:{name:"農村水保署筆記重點1150417-1552",date:"115/04/17",type:"署長筆記本",cover:"截至115年3月31日"},
+ nb4:{name:"農村水保署筆記重點1150513-1330（範本）",date:"115/05/13",type:"署長筆記本",cover:"截至115年4月30日"},
+ nb5:{name:"農村水保署筆記重點1150610-1500（範本）",date:"115/06/10",type:"署長筆記本",cover:"截至115年5月31日"},
+ nb6:{name:"農村水保署筆記重點1150710-0820（範本）",date:"115/07/10",type:"署長筆記本",cover:"截至115年6月30日"},
+ bud4:{name:"附錄一(1) 115年度各項計畫預算執行情形表（總表）",date:"截至115年4月底",type:"預算執行情形"},
+ bud5:{name:"附錄一(1) 115年度各項計畫預算執行情形表（總表）",date:"截至115年5月底",type:"預算執行情形"},
+ bud6:{name:"附錄一(1) 115年度各項計畫預算執行情形表（總表）",date:"截至115年6月底",type:"預算執行情形"},
+ eng4:{name:"附錄一(2) 115年度各項計畫（工程）預算執行情形表",date:"截至115年4月底",type:"預算執行情形"},
+ eng5:{name:"附錄一(2) 115年度各項計畫（工程）預算執行情形表",date:"截至115年5月底",type:"預算執行情形"},
+ eng6:{name:"附錄一(2) 115年度各項計畫（工程）預算執行情形表",date:"截至115年6月底",type:"預算執行情形"},
+ ly:{name:"附錄三 立法院第11屆第5會期經濟委員會第9次全體委員會談參資料（農業用地變更及容許作綠能設施使用）",date:"115/04/14",type:"立法院備詢資料"},
+ flow:{name:"附錄二 保育治理及農路設施改善工程核定(備查)作業流程圖",date:"ARDSWC 113.7.5 版",type:"業務流程文件"}
+};
+
+/* ---- 版本索引 versions ---- */
+const VERS=[
+ {id:"v1",doc:"nb1",label:"115/02/28",data:"115年1月",cut:"115.01.31",add:"本年度首期：公開115年潛勢資料（潛勢溪流1,753條、大規模崩塌94處）"},
+ {id:"v2",doc:"nb2",label:"115/03/06",data:"115年2月",cut:"115.02.28",add:"更新坡地監督、特定水保區（103區）等月度數據"},
+ {id:"v3",doc:"nb3",label:"115/04/17",data:"115年3月",cut:"115.03.31",add:"保全清冊更新為52,783人；114年新生崩塌數據更正為2,674筆"},
+ {id:"v4",doc:"nb4",label:"115/05/13",data:"115年4月",cut:"115.04.30",add:"防災專員累計3,819人；新增附錄一預算執行表（4月底）"},
+ {id:"v5",doc:"nb5",label:"115/06/10",data:"115年5月",cut:"115.05.31",add:"更新演練場次與預算執行（5月底）"},
+ {id:"v6",doc:"nb6",label:"115/07/10",data:"115年6月",cut:"115.06.30",add:"新增：公地放領、水保法修法、農村發展重點區、農村建設工程、大規模崩塌監測治理機制等章節"}
+];
+const VIDX={v1:0,v2:1,v3:2,v4:3,v5:4,v6:5};
+
+/* ---- 章節頁碼（依各期目錄；未載頁碼者以「—」呈現） ---- */
+const PG={
+ 防災整備:{v1:1,v2:1,v3:1,v4:1,v5:1,v6:1}, 警戒基準值:{v1:2,v2:2,v3:2,v4:2,v5:2,v6:2},
+ 防災應變:{v1:3,v2:3,v3:3,v4:3,v5:3,v6:3}, 衛星判釋:{v1:3,v3:3,v4:3,v5:3,v6:3},
+ 坡地監督:{v1:9,v3:9,v4:10,v5:10,v6:10}, 水保計畫:{v1:9,v6:10}, 特定水保區:{v1:10,v6:12},
+ 田媽媽:{v1:12,v3:13,v4:16,v5:16,v6:16}, 休閒產業:{v1:11,v6:16}, 農村社區:{v1:10,v6:13},
+ 超限利用:{v1:10,v6:11}, G1H3:{v6:7}, 中長程計畫:{v6:8}, 農路:{v1:8,v6:8}, 野溪:{v6:9},
+ 生態檢核:{v6:9}, 修法:{v6:13}, 公地放領:{v6:12}, 光電:{v6:18}, 農舍:{v6:18}, 綠色照顧:{v1:11,v6:14}, 企業輔導:{v1:11,v6:14}, 文化保存:{v6:15},
+ 建設工程:{v6:14}, 金牌農村:{v6:15}, 里山:{v6:15}, 重點區:{v6:14}
+};
+
+/* ---- 關鍵數字 facts（一源多用；vals 依版本） ---- */
+const FACTS=[
+ {id:"streams",lab:"土石流潛勢溪流",unit:"條",sec:"防災整備",kw:"潛勢溪流 土石流",
+  vals:{v1:"1,753",v2:"1,753",v3:"1,753",v4:"1,753",v5:"1,753",v6:"1,753"},
+  sub:"17縣市・159鄉鎮・692村里（新增8條）",
+  ex:"115年全臺土石流潛勢溪流共計1,753條，分布於17縣(市)、159鄉(鎮、市、區)、692村(里)，其中新增計8條。"},
+ {id:"lands",lab:"大規模崩塌潛勢區",unit:"處",sec:"防災整備",kw:"大規模崩塌 潛勢區",
+  vals:{v1:"94",v2:"94",v3:"94",v4:"94",v5:"94",v6:"94"},
+  sub:"本署82＋林保署12；第1類34、第2類60",
+  ex:"大規模崩塌潛勢區共計94處（本署82處、林業保育署12處），分布於12縣(市)、42鄉(鎮、市、區)、69村(里)，其中新增計15處。"},
+ {id:"residents",lab:"保全清冊人數",unit:"人",sec:"防災整備",kw:"保全 清冊 疏散",
+  vals:{v1:"51,815",v2:"51,815",v3:"52,783",v4:"52,783",v5:"52,783",v6:"52,783"},
+  notes:{v3:"本期起更新為52,783人"},sub:"702村里防汛期前完成校核",
+  ex:"115年針對全臺17縣市159鄉鎮702村里於防汛期前完成保全住戶清冊校核及疏散避難計畫檢討更新，保全清冊總計52,783人（115年1-2月版為51,815人）。"},
+ {id:"experts",lab:"防災專員累計",unit:"人",sec:"防災整備",kw:"防災專員 培訓",
+  vals:{v1:"3,730",v2:"3,730",v3:"3,730",v4:"3,819",v5:"3,819",v6:"3,819"},
+  notes:{v4:"含115年已培訓376人"},sub:"114年度培訓378人",
+  ex:"114年度培訓土石流防災專員共378人，115年截至6月底已培訓376人，累積人數為3,819人，投入社區自主防災工作。"},
+ {id:"collapse114",lab:"114年新生崩塌",unit:"",sec:"衛星判釋",kw:"新生崩塌 衛星判釋",
+  vals:{v1:"1,950筆",v2:"1,950筆",v3:"2,674筆",v4:"2,674筆",v5:"2,674筆",v6:"2,674筆"},
+  notes:{v3:"本次資料更正（文件載明）"},
+  sub:{v1:"1,547公頃",v2:"1,547公頃",v3:"1,741公頃",v4:"1,741公頃",v5:"1,741公頃",v6:"1,741公頃"},
+  ex:"114年新生崩塌2,674筆，1,741公頃（近10年崩塌的2倍）。115年4月17日版起載明「本次資料更正」，由1,950筆／1,547公頃修正。另113年新生崩塌8,315筆、6,144公頃。"},
+ {id:"collapse115",lab:"115年新生崩塌",unit:"",sec:"衛星判釋",kw:"新生崩塌 115",
+  vals:{v6:"34筆"},sub:{v6:"30公頃（截至6/30）"},
+  ex:"115年截至6月30日，新生崩塌34筆，30公頃。"},
+ {id:"machinery",lab:"重機械待命",unit:"處",sec:"防災應變",kw:"重機械 待命",
+  vals:{v1:"198",v2:"198",v3:"198",v4:"198",v5:"198",v6:"198"},sub:"115年度已完成核定",
+  ex:"115年度已完成核定重機械待命處數：198處。"},
+ {id:"drills",lab:"115年自主防災演練",unit:"",sec:"防災整備",kw:"演練 兵棋",
+  vals:{v4:"實作2・兵推20",v5:"實作5・兵推21",v6:"實作23・兵推152"},
+  sub:"年度目標：實作60場・兵推176場",
+  ex:"115年預計辦理自主實作演練60場、兵棋推演176場、自主防災裝備及設備強化61處；截至115年6月底辦理自主實作演練23場、兵棋推演152場、裝備強化61處。"},
+ {id:"monitor",lab:"山坡地監測管理案件",unit:"件",sec:"坡地監督",kw:"山坡地 監測 管理",
+  vals:{v1:"291",v2:"642",v3:"1,014",v4:"1,354",v5:"1,724",v6:"2,100"},
+  sub:"115年累計；歷年累計78,308件",
+  ex:"強化山坡地監測與管理計畫：115年截至6月2,100件，87年7月-115年6月累計78,308件，62,921公頃。"},
+ {id:"illegal",lab:"山坡地違規查報",unit:"件",sec:"坡地監督",kw:"違規 查報 取締 罰鍰",
+  vals:{v1:"121",v2:null,v3:"421",v4:"513",v5:"613",v6:"695"},
+  sub:{v1:"罰鍰累計31.59億",v3:"罰鍰累計31.79億",v4:"罰鍰累計31.85億",v5:"罰鍰累計31.92億",v6:"罰鍰累計31.98億"},
+  ex:"山坡地違規使用查報取締：115年截至6月695件，72年7月-115年6月累計63,994件31,072公頃，處罰47,193件，罰鍰31.98億元，移送司法偵辦3,345件；112-114年水保法及山保條例判決169件，其中以山保條例判決僅8件，占4.7%。"},
+ {id:"swcplan",lab:"115年水保計畫受理",unit:"件",sec:"水保計畫",kw:"水土保持計畫 簡易",
+  vals:{v1:"291",v3:"1,014",v4:"1,354",v5:"1,724",v6:"2,100"},
+  sub:{v6:"水保339＋簡易1,761；114全年5,213件"},
+  ex:"115年6月水土保持計畫339件、簡易水保計畫1,761件合計2,100件；114年水土保持計畫769件、簡易水保計畫4,444件合計5,213件。"},
+ {id:"spzone",lab:"特定水土保持區",unit:"區",sec:"特定水保區",kw:"特定水土保持區",
+  vals:{v1:"101",v2:"103",v3:"105",v4:"106",v5:"107",v6:"109"},
+  sub:{v1:"現存54・廢止47",v2:"現存56",v3:"現存58",v4:"現存59",v5:"現存60",v6:"現存62・另9區劃定中"},
+  ex:"截至115年7月1日已劃定公告109區(現存62區、廢止47區)，另有9區進行劃定作業中。"},
+ {id:"tanma",lab:"田媽媽輔導",unit:"家",sec:"田媽媽",kw:"田媽媽",
+  vals:{v1:"103",v6:"102"},
+  sub:{v1:"產值5.9億（截至115.1）",v6:"產值6.7億（截至115.6）"},
+  ex:"截至115年度6月底共102家，產值6.7億元（產值已含在休場產值110億元內）。115年1月版為103家、產值5.9億元。"},
+ {id:"leisure",lab:"休閒農業",unit:"",sec:"休閒產業",kw:"休閒農業 休區 休場 遊客",
+  vals:{v2:"114休區・571場",v3:"114休區・571場",v4:"115休區・574場",v5:"115休區・577場",v6:"115休區・577場"},
+  sub:{v2:"409家營業",v3:"409家營業",v4:"412家營業",v5:"414家營業",v6:"413家營業・產值110億・遊客2,984萬人次"},
+  ex:"全國115個休區、577家休場（413家營業）產值110億元，年遊客數2,984萬人次（國外約55.3萬人次）。"},
+ {id:"rural",lab:"農村再生社區",unit:"",sec:"農村社區",kw:"農村再生 社區",
+  vals:{v1:"提1,120・核1,111",v3:"提1,120・核1,111",v4:"提1,120・核1,111",v5:"提1,120・核1,111",v6:"提1,134・核1,125"},
+  sub:{v6:"原民地區提160・核156"},
+  ex:"截至115年6月底累計1,134社區提出農村再生計畫，核定1,125社區(原民地區計160社區提出，核定156社區)。自100年起累計辦理1,062社區14,719件建設工程，約162.17億元，其中115年辦理584件(5.49億元)。"},
+ {id:"stream-clean",lab:"野溪清疏累計",unit:"件",sec:"野溪",kw:"野溪 清疏",
+  vals:{v6:"1,612"},sub:{v6:"土砂7,644萬方・年均473萬方"},
+  ex:"截至115年6月30日共計核辦1,612件，土砂清疏量7,644.04萬方，平均每年清疏473.16萬方。"},
+ {id:"g1h3",lab:"丹娜絲G1H3復建核定",unit:"件",sec:"G1H3",kw:"G1H3 復建 丹娜絲 審議",
+  vals:{v6:"1,891"},sub:{v6:"核定經費63億6,915萬"},
+  ex:"組成G1水土保持類及H3其他農路類專案審議小組，於114年10月16、17日辦理4場審議會議，依審議結果共核定1,891件工程，核定經費63億6,915萬8,000元。"},
+ {id:"build",lab:"區域亮點工程",unit:"件",sec:"建設工程",kw:"農村建設 亮點 工程 道路",
+  vals:{v6:"136"},sub:{v6:"總經費8.9億・服務126社區・改善道路約28公里"},
+  ex:"115年度核定區域亮點工程計136件，總經費8.9億元，計服務126個社區，改善社區道路及通行環境約28公里，有效提升農村生活機能及整體環境品質。"},
+ {id:"checkup",lab:"農村再生設施體檢",unit:"件",sec:"建設工程",kw:"設施體檢 維護 國賠",
+  vals:{v6:"460"},sub:{v6:"115年預計擴大辦理；114年完成225件"},
+  ex:"為降低設施使用風險及避免衍生國賠案件，依設施狀況分為A至E級：114年度完成225件體檢作業，115年度預計擴大辦理460件，全面強化設施安全與維護機制。"},
+ {id:"green",lab:"農村社區綠色照顧",unit:"案",sec:"綠色照顧",kw:"綠色照顧 高齡 社區",
+  vals:{v6:"238"},sub:{v6:"約2.22億（既有163＋新案75；文件註：5月239案、6月取消1案）"},
+  ex:"115年持續輔導238案(既有案件163案、新案75案)約2億2,243萬4,000元；另結合桃園、臺中、臺南及高雄區農業改良場與種苗場、農試所鳳山分所(6案470萬元)合作推動。(5月份239案,6月份取消1案)"},
+ {id:"enterprise",lab:"農村社區企業輔導",unit:"家",sec:"企業輔導",kw:"農社企 企業 青年 回留",
+  vals:{v6:"241"},sub:{v6:"106-113累計；產值74.01億・青年回留2,828人次"},
+  ex:"106-113年累計輔導241家，核定補助款總額4.445億元，產值達74.01億元、促進民間投資達17.23億元，帶動就業人數4,056人次、促進青年回(留)鄉2,828人次。115年第10屆農社企孵化組通過14位、企業組10家。"},
+ {id:"focus",lab:"農村發展重點區",unit:"處",sec:"重點區",kw:"重點區 跨部門 資源整合",
+  vals:{v6:"16"},sub:{v6:"108個村里；115年起聚焦推動"},
+  ex:"自115年起聚焦「農村發展重點區」，作為資源優先投入核心，強化跨部門及多元資源整合；115年度選定16處重點區、108個村里，由各分署整合推動軟硬體建設。"},
+ {id:"gold",lab:"金牌農村競賽",unit:"屆",sec:"金牌農村",kw:"金牌農村 競賽 領航獎",
+  vals:{v6:"3"},sub:{v6:"歷屆選出22／23／22社區；第四屆評選中"},
+  ex:"第一屆選出22個農村社區（3金4銀8銅7優等）、第二屆23個、第三屆22個；第四屆刻正辦理評選作業。依農業部115.04.14會議決議，119年起與農村領航獎整併、每3年擴大頒獎。"},
+ {id:"culture",lab:"農村文化保存（好藝）",unit:"件",sec:"文化保存",kw:"文化保存 技藝 好藝",
+  vals:{v6:"29"},sub:{v6:"115年第二屆入選（申請67件）；114年補助29件"},
+  ex:"115年第二屆農村好藝計畫徵件共收到67件申請（技藝保存19、傳承推廣29、技藝活用19），經複審計入選29件，1件待確認修正後通過；114年補助29件（由調查紀錄轉型為輔導及補助制度）。"},
+ {id:"roadHist",lab:"農路設施改善（歷年）",unit:"",sec:"農路",kw:"農路 改善 公里 養護",
+  vals:{v1:"3,844公里",v2:"3,844公里",v3:"3,844公里",v4:"3,844公里",v5:"3,844公里",v6:"3,844公里"},
+  sub:"98-109年投入153.91億；現行第四期114-117年",
+  ex:"農業部98年至109年間陸續經費153.91億元，已完成農路設施長度約3,844公里。現行「重劃區外緊急農路設施改善計畫114至117年度(第四期)」：不新闢及拓寬農路，以設置必要之避車道為主。"},
+ {id:"plandS",lab:"公地放領（山坡地）",unit:"",sec:"公地放領",kw:"公地放領 山坡地 停辦",
+  vals:{v6:"維持停辦"},sub:{v6:"重啟範圍限國有平地耕地及邊際養殖用地"},
+  ex:"行政院114年11月27日第3980次院會決議略以，本次重啟公地放領的範圍定為「國有平地耕地及邊際養殖用地」；內政部114.12.22函復山坡地放領仍維持停辦。本署依部五長會議指示辦理山坡地公有地盤點與規劃。"}
+];
+const FMAP={}; FACTS.forEach(f=>FMAP[f.id]=f);
+
+/* ---- 預算資料 budgetData（附錄一，單位：億元） ---- */
+const BUD={
+ months:[{id:"m4",lab:"115年4月底",doc:"bud4",eng:"eng4"},{id:"m5",lab:"115年5月底",doc:"bud5",eng:"eng5"},{id:"m6",lab:"115年6月底",doc:"bud6",eng:"eng6"}],
+ total:{A:231.57,m4:{exec:69.91,rate:30.19,alloc:87.40},m5:{exec:87.00,rate:37.57,alloc:88.46},m6:{exec:102.67,rate:44.34,alloc:90.33}},
+ goal:34.54,
+ plans:[
+  {n:"農業部列管重大公共建設",A:115.17,m4:[38.61,33.52],m5:[47.19,40.98],m6:[55.54,48.22]},
+  {n:"　整體性治山防災",A:64.55,m4:[24.65,38.19],m5:[28.12,43.57],m6:[32.82,50.84]},
+  {n:"　氣候變遷下大規模崩塌防減災",A:21.29,m4:[5.74,26.94],m5:[7.94,37.28],m6:[9.60,45.08]},
+  {n:"　重劃區外緊急農路設施改善",A:23.23,m4:[7.99,34.41],m5:[9.58,41.24],m6:[10.88,46.84]},
+  {n:"前瞻基礎建設",A:3.81,m4:[3.56,93.35],m5:[3.63,95.33],m6:[3.75,98.38]},
+  {n:"農村再生基金",A:48.76,m4:[6.25,12.82],m5:[8.86,18.18],m6:[11.48,23.55]},
+  {n:"疫後強化韌性特別預算",A:0.82,m4:[0.81,99.70],m5:[0.81,98.58],m6:[0.81,99.07]},
+  {n:"丹娜絲及0728豪雨災後重建",A:62.52,m4:[20.68,33.07],m5:[26.50,42.39],m6:[31.04,49.64]}
+ ],
+ proj:{ /* 工程核定率/決標率(%)；last=去年同期決標率 */
+  main:{n:"總計（不含丹娜絲）",m4:[92.28,50.51],m5:[99.12,65.12],m6:[100,76.89],last:60.96},
+  dan:{n:"丹娜絲及0728重建工程",m4:[90.30,22.99],m5:[91.93,29.04],m6:[94.5,36.13],last:null}
+ }
+};
+
+/* ---- 各期章節目錄（僅 v1 與 v6 完整收錄，供結構比對） ---- */
+const SECTIONS={
+ v1:["土石流及大規模崩塌防災整備","土石流潛勢溪流劃設作業流程","大規模崩塌潛勢區影響範圍劃設","修訂警戒基準值","防災應變","衛星判釋崩塌面積","二次災害高風險區強化作為","警戒發布程序","年降雨量平均","大雨豪雨定義","警戒預報單","不安定土砂災害風險監控","G1H3復建工程法規及審議","大規模崩塌防減災計畫(一~三期)","重劃區外緊急農路設施改善計畫","野溪清疏","生態檢核","水土保持工程體檢","原鄉","坡地監督與管理","水土保持計畫","台灣山坡地面積統計","山坡地超限利用查處","山坡地範圍劃定及通盤檢討","特定水土保持區","農村社區","農村社區綠色照顧","農村社區企業經營輔導","臺灣里山生態農村實踐計畫","休閒產業","田媽媽輔導","農地違規使用之處理","農業用地興建農舍現況","農地變更設置光電之原則","農地回填土方及管理","水土保持戶外教室"],
+ v6:["土石流及大規模崩塌防災整備","土石流潛勢溪流劃設作業流程","大規模崩塌潛勢區影響範圍劃設","修訂警戒基準值","防災應變","衛星判釋崩塌面積","二次災害高風險區強化作為","警戒發布程序","年降雨量平均","大雨豪雨定義","警戒預報單","大規模崩塌監測及整體治理規劃機制","不安定土砂災害風險監控","G1H3復建工程法規及審議","大規模崩塌防減災計畫(一~三期)","重劃區外緊急農路設施改善計畫","野溪清疏","生態檢核","水土保持工程體檢","原鄉","坡地監督與管理","水土保持計畫","緊急搶通搶災免擬具水保計畫","台灣山坡地面積統計","山坡地超限利用查處","山坡地範圍劃定及通盤檢討","特定水土保持區","公地放領","水保法及山保條例修法","農村社區","農村社區綠色照顧","農村社區企業經營輔導","農村發展重點區","農村再生工程設施體檢與維護","農村建設工程","金牌農村競賽","臺灣里山生態農村實踐計畫","農村文化保存","休閒產業","田媽媽輔導","農地違規使用之處理","農業用地興建農舍現況","農地設置太陽光電設施之原則","農地回填土方及管理","源頭管制農業用地接電案件複查作業","水土保持戶外教室"]
+};
+const RENAME=[["農地變更設置光電之原則","農地設置太陽光電設施之原則","章節名稱修正（內容同屬農地光電原則）"]];
+
+/* ---- 業務主題 topics ---- */
+const BIZ=[
+ {t:"坡地防災整備與應變",sec:"防災整備",kw:"防災 警戒 疏散 觀測 演練",
+  body:v=>`潛勢溪流 ${fv('streams',v)||'—'} 條、大規模崩塌潛勢區 ${fv('lands',v)||'—'} 處；保全清冊 ${fv('residents',v)||'—'} 人（702村里）；重機械待命 ${fv('machinery',v)} 處。土砂觀測站48站（長期23・行動車3・機動22）、大規模崩塌觀測站94站、自動雨量站118站。警戒發布6時段（06:30起）；黃色警戒＝預測雨量＞基準值即勸告疏散、紅色警戒＝實際降雨＞基準值應勸告或強制撤離。${fv('drills',v)?'115年演練進度：'+fv('drills',v)+'場。':''}自主防災社區累計628村里。`},
+ {t:"治理工程與野溪清疏",sec:"野溪",kw:"治山 野溪 清疏 生態檢核 工程體檢 G1H3",
+  body:v=>v==="v6"
+   ?`野溪清疏累計核辦 1,612 件、土砂清疏 7,644 萬方（年均473萬方）。生態檢核採分級制度（敏感核心區1級、區外2級；石門水庫等13座重要供水水庫集水區強化2級）。工程體檢111-114年度檢查4,777件。丹娜絲及0728豪雨G1H3專案審議核定1,891件、63.69億元；114年其他天然災害復建152件、5.74億元。`
+   :`本期版本收錄野溪清疏、生態檢核與工程體檢制度說明；G1H3審議統計與丹娜絲專案數據載於115/07/10版，詳版本切換。`},
+ {t:"農路設施改善",sec:"農路",kw:"農路 重劃區外",
+  body:v=>`重劃區外緊急農路設施改善計畫：98-109年投入153.91億元、完成農路約3,844公里；現行為第四期（114-117年度）。原則：不新闢及拓寬農路，以既有農路養護與必要避車道為主；優先順序為住家與公共設施對外交通、農產運輸路況欠佳者。工程核定（備查）依113.7.5版兩階段流程辦理（核定金額700萬元為分工門檻，詳附錄二流程圖）。`},
+ {t:"坡地監督與管理",sec:"坡地監督",kw:"山坡地 違規 水保計畫 超限利用 特定水保區",
+  body:v=>`115年山坡地監測管理案件累計 ${fv('monitor',v)||'本期未收錄'} 件${fv('illegal',v)?'；違規查報 '+fv('illegal',v)+' 件（'+fsub('illegal',v)+'）':''}。水保計畫115年受理 ${fv('swcplan',v)||'本期未收錄'} 件。特定水土保持區已劃定公告 ${fv('spzone',v)} 區（${fsub('spzone',v)}）。超限利用第二階段列管3,745.49公頃，截至115.6.30已查復3,036公頃、未查復710公頃，目標120年前完成改正。`},
+ {t:"農村再生與建設",sec:"農村社區",kw:"農村再生 社區 綠色照顧 金牌農村 里山 建設 亮點",
+  body:v=>`農村再生：${fv('rural',v)} 社區${v==="v6"?'；115年核定年度執行計畫411社區584案5.49億元、綠色照顧238案2.22億元。115年起聚焦16處「農村發展重點區」（108村里）；區域亮點工程136件8.9億元、服務126社區、改善道路約28公里；農村再生設施體檢115年擴大至460件':'（詳各期內文；重點區、建設工程統計載於115/07/10版）'}。里山倡議：106年加入IPSI，13處社區登上國際案例。`},
+ {t:"休閒產業與農地管理",sec:"休閒產業",kw:"休閒農業 田媽媽 農舍 光電 農地 違規",
+  body:v=>`休閒農業：${fv('leisure',v)||'本期未收錄'}${fsub('leisure',v)?'（'+fsub('leisure',v)+'）':''}；田媽媽 ${fv('tanma',v)||'本期未收錄'}${fv('tanma',v)?' 家（'+fsub('tanma',v)+'）':''}。農地光電採「農業為本、綠能加值」：屋頂型（容許辦法§28）、營農地面型漁電共生（§29）、非營農地面型（§30，已公告2,162公頃不利耕作區）；農地變更未達2公頃不同意變更作光電。農舍：申請者應為農民，104年修法明定矩形配置臨側臨路；每年督導地方稽查達前一年度使照件數30%。`}
+];
+
+/* ---- 備詢題庫 qaItems（僅收錄文件有依據之問答）——【暫停中】頁面已自導覽移除，資料完整保留供日後恢復 ---- */
+const QAS=[
+ {id:"q-bud",tp:"預算執行",hot:0,minV:"v4",q:"115年度預算執行情形如何？",
+  ans:v=>{const m=budOfVer(v);const d=BUD.total[m.id];return `115年度全年可支用預算 231.57 億元，截至${m.lab}執行數 ${d.exec.toFixed(2)} 億元、達成率 ${d.rate}%（目標值 ${BUD.goal}%）、執行率 ${d.alloc}%。`},
+  nums:v=>{const m=budOfVer(v);const d=BUD.total[m.id];return [[d.exec.toFixed(2)+" 億","執行數"],[d.rate+"%","達成率"],[d.alloc+"%","執行率"]]},
+  note:"總表另分列重大公建、前瞻、農再基金、疫後、農發基金及丹娜絲重建等各計畫，詳 KPI 頁月份切換。",src:"bud"},
+ {id:"q-proj",tp:"預算執行",hot:0,minV:"v4",q:"工程核定與決標情形如何？",
+  ans:v=>{const m=budOfVer(v);const p=BUD.proj.main[m.id];return `截至${m.lab}，本署各項計畫純工程（不含丹娜絲）核定率 ${p[0]}%、決標率 ${p[1]}%（去年同期決標率 ${BUD.proj.main.last}%）。`},
+  nums:v=>{const m=budOfVer(v);return [[BUD.proj.main[m.id][0]+"%","核定率"],[BUD.proj.main[m.id][1]+"%","決標率"],[BUD.proj.dan[m.id][1]+"%","丹娜絲決標率"]]},
+  note:"丹娜絲重建工程另計：6月底核定率94.5%、決標率36.13%（附錄一(2)）。",src:"eng"},
+ {id:"q-dan",tp:"預算執行",hot:1,minV:"v6",q:"丹娜絲颱風及0728豪雨災後重建辦理情形？",
+  ans:()=>"災後復原重建特別預算全年可支用 62.52 億元，截至115年6月底執行 31.04 億元、達成率 49.64%；G1（水保類）、H3（農路類）專案審議共核定 1,891 件工程、63.69 億元。",
+  nums:()=>[["62.52 億","特別預算可支用"],["49.64%","6月底達成率"],["1,891 件","G1H3核定工程"]],
+  note:"災區範圍經行政院114.9.30公告為苗栗、臺中、南投、彰化、雲林、嘉義縣市、臺南、高雄、屏東、花蓮、臺東共12縣市。",src:"g1h3"},
+ {id:"q-str",tp:"坡地防災",hot:0,minV:"v1",q:"全國有多少土石流潛勢溪流？風險結構如何？",
+  ans:v=>`115年全臺土石流潛勢溪流共 ${fv('streams',v)} 條（17縣市、159鄉鎮、692村里，新增8條）；風險等級：高418、中485、低573、持續觀察277條。`,
+  nums:()=>[["1,753 條","潛勢溪流"],["903 條","中高風險（51.5%）"],["8 條","本年新增"]],
+  note:"中高風險合計903條、占51.5%（比例結構分析載於115/07/10版）。每年防汛期前檢討警戒基準值並依法公開；115年計調整4縣市、8鄉鎮市區。",src:"streams"},
+ {id:"q-land",tp:"坡地防災",hot:0,minV:"v1",q:"大規模崩塌潛勢區有多少？如何監測治理？",
+  ans:v=>`大規模崩塌潛勢區公開 ${fv('lands',v)} 處（本署82、林保署12），警戒發布分2類：第1類34處（警戒值250~650mm）、第2類60處（600~1500mm）。`,
+  nums:()=>[["94 處","警戒發布區"],["103 處","優先辦理區"],["327 處","計畫執行區"]],
+  note:"監測治理三層機制（327→103→94處）以InSAR廣域監測＋現地細部監測，作為警戒發布、整體治理規劃及特定水保區劃定依據（載於115/07/10版第6頁）。",src:"lands"},
+ {id:"q-res",tp:"坡地防災",hot:0,minV:"v1",q:"保全住戶與疏散整備情形？",
+  ans:v=>`115年於防汛期前完成702村里保全住戶清冊校核及疏散避難計畫更新，保全清冊總計 ${fv('residents',v)} 人；重機械待命 ${fv('machinery',v)} 處；防災專員累計 ${fv('experts',v)} 人。`,
+  nums:v=>[[fv('residents',v)+" 人","保全清冊"],[fv('machinery',v)+" 處","重機械待命"],[fv('experts',v)+" 人","防災專員累計"]],
+  note:"自主防災社區累計推動628村里；115年已完成94處大規模崩塌潛勢區村里輔導（115/07/10版）。",src:"residents"},
+ {id:"q-warn",tp:"坡地防災",hot:0,minV:"v1",q:"土石流警戒如何發布與解除？",
+  ans:()=>"黃色警戒：預測雨量大於警戒基準值，地方政府應疏散避難勸告；紅色警戒：實際降雨已達基準值，應勸告或強制撤離並安置。每日6時段（06:30、12:30、15:30、18:30、21:30、0:30）發布，必要時加報。",
+  nums:()=>[["6 時段","每日發布"],["250~650mm","土石流警戒值分布"],["2 階段","解除標準"]],
+  note:"解除：紅降黃再解除（連續6小時平均降雨強度<4mm且最大時雨量≤10mm）；或紅色直接解除（連續12小時平均<10mm且無持續降雨趨勢）。依113.4.8修正之疏散避難作業規定。",src:"warn"},
+ {id:"q-col",tp:"坡地防災",hot:0,minV:"v1",q:"近年新生崩塌情形？",
+  ans:v=>`113年新生崩塌8,315筆、6,144公頃（近5年平均30倍）；114年 ${fv('collapse114',v)}、${fsub('collapse114',v)}${fv('collapse115',v)?'；115年截至6月底 '+fv('collapse115',v)+'、'+fsub('collapse115',v):''}。`,
+  nums:v=>{const a=[["8,315 筆","113年新生崩塌"],[fv('collapse114',v),"114年（"+fsub('collapse114',v)+"）"]];if(fv('collapse115',v))a.push([fv('collapse115',v),"115年截至6/30"]);return a},
+  note:"二次災害高風險區累計42處（花蓮16、高雄10、屏東3、臺東5等），雨量超過注意值即發布細胞廣播先期告警，黃色警戒後優先預防性疏散。114年數據於115/04/17版更正。",src:"collapse114"},
+ {id:"q-clean",tp:"工程治理",hot:0,minV:"v6",q:"野溪清疏辦理成果？",
+  ans:()=>"自98年度起辦理，截至115年6月30日累計核辦1,612件，土砂清疏量7,644.04萬方，平均每年清疏473.16萬方。",
+  nums:()=>[["1,612 件","累計核辦"],["7,644 萬方","土砂清疏量"],["473 萬方","年均清疏"]],
+  note:"已核辦件數中仍有持續進行清疏工程者，故件數不變但清疏量持續增加（文件原註）。",src:"stream-clean"},
+ {id:"q-eco",tp:"工程治理",hot:0,minV:"v1",q:"生態檢核如何辦理？",
+  ans:()=>"依工程會「公共工程生態檢核注意事項」辦理；本署採分級制度：生態敏感核心區內工程委託生態團隊辦理1級檢核，區外執行2級檢核；石門水庫等13座重要供水水庫集水區及易受關注區域採強化2級。",
+  nums:()=>[["1級/2級","分級檢核"],["13 座","重要水庫強化2級"]],
+  note:"中央補助逾50%之地方新建公共工程亦須辦理（108.5.10修正規定）。",src:"eco"},
+ {id:"q-road",tp:"農路",hot:0,minV:"v1",q:"農路設施改善計畫內容與原則？",
+  ans:()=>"98-109年投入153.91億元、完成農路約3,844公里；現行「重劃區外緊急農路設施改善計畫（114-117年度，第四期）」以既有農路養護為主，不新闢及拓寬農路，僅設必要避車道。",
+  nums:()=>[["153.91 億","98-109年投入"],["3,844 公里","已完成農路"],["第四期","114-117年度"]],
+  note:"優先順序：1.住家或公共設施對外交通需要 2.農產運輸路況欠佳 3.配合產業聚落發展 4.歷年未竟工程。工程核定依113.7.5版兩階段流程（700萬元為分工門檻）。",src:"road"},
+ {id:"q-ill",tp:"坡地管理",hot:0,minV:"v1",q:"山坡地違規使用查處情形？",
+  ans:v=>`115年山坡地違規使用查報取締 ${fv('illegal',v)||'（本期資料未收錄）'} 件；歷年（72年7月起）累計63,994件、31,072公頃，處罰47,193件、${fsub('illegal',v)||'罰鍰31.98億元'}，移送司法偵辦3,345件。`,
+  nums:v=>[[fv('illegal',v)||"—","115年查報件數"],[fsub('illegal',v)?fsub('illegal',v).replace('罰鍰累計',''):"31.98億","罰鍰累計"],["3,345 件","移送司法偵辦"]],
+  note:"112-114年水保法及山保條例判決169件，其中山保條例判決僅8件、占4.7%（115/05/13版起載明）。歷年累計數字以所選版本文件為準。",src:"illegal"},
+ {id:"q-over",tp:"坡地管理",hot:0,minV:"v6",q:"山坡地超限利用查處進度？",
+  ans:()=>"第一階段（81-114年）查核34,619公頃，尚有528公頃未改善；第二階段列管3,745.49公頃（112-114查復、115-120改正），截至115年6月30日已查復3,036公頃、未查復710公頃，自115年起逐年改正20%，目標120年前全部完成。",
+  nums:()=>[["3,745 公頃","第二階段列管"],["3,036 公頃","已查復"],["120 年","完成改正目標"]],
+  note:"國產署、林業署及原民會經管土地依面積比例分3年查復；本署按季追蹤並不定期召開檢討會議。",src:"over"},
+ {id:"q-rural",tp:"農村再生",hot:0,minV:"v1",q:"農村再生推動成果？",
+  ans:v=>`累計 ${fv('rural',v)} 社區；自100年起全國累計辦理建設工程14,719件、約162.17億元${v==="v6"?'；115年辦理584件（5.49億元）。115年起聚焦16處「農村發展重點區」（108村里）作為資源優先投入核心':'（各期統計口徑略有差異，以所選版本文件為準）'}。`,
+  nums:v=>[[fv('rural',v),"社區（提出・核定）"],["14,719 件","累計建設工程"],["162.17 億","累計投入"]],
+  note:"115年核定：縣市農再總體計畫9案3,500萬、年度執行計畫411社區584案5.49億、專管與培根22案8,827萬（115/07/10版）。",src:"rural"},
+ {id:"q-build",tp:"農村再生",hot:0,minV:"v6",q:"115年農村建設工程辦理情形？",
+  ans:()=>"115年度核定區域亮點工程136件、總經費8.9億元，服務126個社區，改善社區道路及通行環境約28公里；農村再生工程設施體檢115年度預計擴大辦理460件（114年完成225件）。",
+  nums:()=>[["136 件","區域亮點工程"],["8.9 億","總經費"],["460 件","115年設施體檢"]],
+  note:"設施體檢依狀況分A至E級，作為維護、改善及管理依據，降低使用風險及避免國賠案件。",src:"build"},
+ {id:"q-lei",tp:"休閒產業",hot:0,minV:"v2",q:"休閒農業與田媽媽現況？",
+  ans:v=>`${fv('leisure',v)||'本期資料未收錄'}${fsub('leisure',v)?'（'+fsub('leisure',v)+'）':''}${fv('tanma',v)?'；田媽媽 '+fv('tanma',v)+' 家、'+fsub('tanma',v):''}。農遊超市截至115年6月底推出331家業者882條行程。`,
+  nums:v=>{const a=[];if(fv('leisure',v))a.push([fv('leisure',v),"休區・休場"]);if(fv('tanma',v))a.push([fv('tanma',v)+" 家","田媽媽"]);a.push(["331 家","農遊超市業者"]);return a},
+  note:"休閒農場申設面積不得小於1公頃（休區內或離島0.5公頃）、農業用地應占90%以上。田媽媽產值已含於休場產值110億內。",src:"leisure"},
+ {id:"q-law",tp:"立院關注",hot:1,minV:"v6",q:"水保法及山保條例修法，本署立場為何？",
+  ans:()=>"立法院經濟委員會115年5月7日審查委員及黨團提案修正草案，決議另擇期審查。農業部意見：調高罰鍰及罰金上限原則支持；低強度或小規模違規不宜微罪重罰，建議維持罰鍰下限6萬元等現行規定；建議維持按次處罰。",
+  nums:()=>[["115.5.7","經委會審查"],["原則支持","調高罰鍰上限"],["建議維持","下限與按次處罰"]],
+  tone:"回應口徑（依文件載明之農業部意見）：增訂擅自開發裁罰及違規後續處理原則支持，建議以現行第23條第2項為基礎，將停工、沒入設施機具、強制拆除清除工作物一併納入，並明確規範改正對象及義務，以利實務執行。",src:"law"},
+ {id:"q-pv",tp:"立院關注",hot:1,minV:"v4",q:"農地設置太陽光電之原則？苗栗石虎棲地光電案如何處理？",
+  ans:()=>"以「農業為本、綠能加值」為主軸：屋頂型（容許辦法§28）優先，續推漁電共生地面型（§29），非營農地面型限特定區位（§30，已公告2,162公頃）；農地變更未達2公頃不同意變更作光電。欣雄公司苗栗西湖二案（合計84公頃、全區石虎重要棲地），因農變合理性、必要性及無可替代性不足，本部已於115年2月26日及3月26日函復經濟部不同意變更。",
+  nums:()=>[["2 公頃","變更門檻（未達不同意）"],["2,162 公頃","公告不利耕作區"],["84 公頃","欣雄案不同意變更"]],
+  tone:"回應口徑（依談參資料）：光電選址應避開石虎重要棲地；農變審查應確認不影響農業生產環境完整，特定農業區從嚴限縮變更。",src:"pv"},
+ {id:"q-land2",tp:"立院關注",hot:1,minV:"v6",q:"公地放領政策，山坡地是否納入？",
+  ans:()=>"行政院114年11月27日第3980次院會決議，本次重啟公地放領範圍定為「國有平地耕地及邊際養殖用地」；內政部114.12.22函復山坡地放領仍維持停辦。本署依部五長會議指示辦理山坡地公有地盤點與規劃，並依「公有土地放領影響水源涵養國土保安及自然保育認定作業要點」（115.2.26修正發布）協助認定。",
+  nums:()=>[["3980 次","院會決議"],["停辦","山坡地放領現況"],["115.2.26","認定要點修正發布"]],
+  note:"緣起：總統114.5.16裁示希望符合放領條件者返還人民；行政院114.9.17召開研商會議由內政部統籌。",src:"pland"},
+ {id:"q-house",tp:"農地管理",hot:0,minV:"v1",q:"農舍興建管理與督導情形？",
+  ans:()=>"申請興建農舍者應為農民（實際從事農業生產者）；104年修法明定農舍用地應矩形配置於農地地界線側及臨接道路。本署每年2月要求各地方政府提送前年度農舍興建名冊及稽查情形備查，年度稽查件數應至少達前一年度使照件數之30%。",
+  nums:()=>[["104.9.4","辦法修正"],["30%","年度稽查比例下限"]],
+  note:"農舍係與農業經營不可分離之建築物，非持有農地即能申請興建。",src:"house"},
+ {id:"q-ipsi",tp:"國際合作",hot:0,minV:"v1",q:"國際里山倡議參與成果？",
+  ans:()=>"本署推動臺灣里山生態農村實踐計畫（106年起），於106年6月22日成為國際里山倡議夥伴關係（IPSI）成員；全國80處潛力社區已有13處登上IPSI刊出社區案例（2018-2025年）。",
+  nums:()=>[["106 年","加入IPSI"],["13 處","國際刊出案例"]],
+  note:"最新刊出：屏東牡丹高士社區、苗栗市南勢社區（2025）。",src:"satoyama"},
+ {id:"q-swc",tp:"坡地管理",hot:0,minV:"v1",q:"水土保持計畫受理情形？",
+  ans:v=>`115年${VERS[VIDX[v]].data}水土保持計畫合計受理 ${fv('swcplan',v)||'（本期資料未收錄）'} 件；114年全年5,213件（水保769＋簡易4,444）、113年6,120件、112年5,772件。`,
+  nums:v=>[[fv('swcplan',v)||"—","115年累計"],["5,213 件","114年全年"],["6,120 件","113年全年"]],
+  note:"挖填方加計總和或堆積土石方未滿2,000立方公尺者，得以簡易水保申報書代替（審監辦法§3）；緊急搶通搶災非屬有目的開發行為，無水保法§12適用（95年函釋）。",src:"swcplan"}
+];
+const TOPICS=["全部","預算執行","坡地防災","工程治理","農路","坡地管理","農村再生","休閒產業","農地管理","立院關注","國際合作"];
+
+/* ---- 來源索引 sourceIndex ---- */
+function nbDoc(v){return DOCS[VERS[VIDX[v]].doc]}
+const SRC={
+ streams:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌防災整備",pg:PG.防災整備[v],ex:FMAP.streams.ex}),
+ lands:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌防災整備／大規模崩塌監測及整體治理規劃機制",pg:PG.防災整備[v],ex:FMAP.lands.ex}),
+ residents:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌防災整備",pg:PG.防災整備[v],ex:FMAP.residents.ex}),
+ experts:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌防災整備",pg:PG.防災整備[v],ex:FMAP.experts.ex}),
+ collapse114:v=>({d:nbDoc(v),sec:"衛星判釋崩塌面積",pg:PG.衛星判釋[v],ex:FMAP.collapse114.ex}),
+ collapse115:v=>({d:nbDoc(v),sec:"衛星判釋崩塌面積",pg:PG.衛星判釋[v],ex:FMAP.collapse115.ex}),
+ machinery:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌防災應變",pg:PG.防災應變[v],ex:FMAP.machinery.ex}),
+ drills:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌防災整備",pg:PG.防災整備[v],ex:FMAP.drills.ex}),
+ monitor:v=>({d:nbDoc(v),sec:"坡地監督與管理",pg:PG.坡地監督[v],ex:FMAP.monitor.ex}),
+ illegal:v=>({d:nbDoc(v),sec:"坡地監督與管理",pg:PG.坡地監督[v],ex:FMAP.illegal.ex}),
+ swcplan:v=>({d:nbDoc(v),sec:"水土保持計畫（水保法第12條第1項）",pg:PG.水保計畫[v],ex:FMAP.swcplan.ex}),
+ spzone:v=>({d:nbDoc(v),sec:"特定水土保持區",pg:PG.特定水保區[v],ex:FMAP.spzone.ex}),
+ tanma:v=>({d:nbDoc(v),sec:"田媽媽輔導",pg:PG.田媽媽[v],ex:FMAP.tanma.ex}),
+ leisure:v=>({d:nbDoc(v),sec:"休閒產業",pg:PG.休閒產業[v],ex:FMAP.leisure.ex}),
+ rural:v=>({d:nbDoc(v),sec:"農村社區",pg:PG.農村社區[v],ex:FMAP.rural.ex}),
+ "stream-clean":v=>({d:nbDoc(v),sec:"野溪清疏",pg:PG.野溪[v],ex:FMAP["stream-clean"].ex}),
+ g1h3:()=>({d:DOCS.nb6,sec:"G1H3天然災害公共設施復建工程相關法規及審議",pg:PG.G1H3.v6,ex:FMAP.g1h3.ex}),
+ warn:v=>({d:nbDoc(v),sec:"土石流及大規模崩塌警戒發布程序／警戒預報單",pg:4,ex:"黃色警戒：預測雨量大於警戒基準值，地方政府應疏散避難勸告；紅色警戒：實際降雨已達基準值，應勸告或強制其撤離並作適當之安置。警戒發布時段調整為06:30、12:30、15:30、18:30、21:30與0:30等6個時段。"}),
+ eco:v=>({d:nbDoc(v),sec:"生態檢核",pg:PG.生態檢核[v],ex:"本署於生態敏感核心區內如需辦理工程時，須委託聘請生態團隊辦理1級生態檢核流程，區外則執行2級檢核流程；石門水庫等13座重要供水水庫集水區及易受關注區域（強化2級）。"}),
+ road:v=>({d:nbDoc(v),sec:"重劃區外緊急農路設施改善計畫（另見附錄二流程圖）",pg:PG.農路[v],ex:"農業部98年至109年間陸續經費153.91億元，已完成農路設施長度約3,844公里。「重劃區外緊急農路設施改善計畫114至117年度(第四期)」：不新闢及拓寬農路，以設置必要之避車道為主。"}),
+ over:()=>({d:DOCS.nb6,sec:"山坡地超限利用及13座重大水庫及敏感區位涉超限利用查處進度",pg:PG.超限利用.v6,ex:"第二階段辦理情形：截至115年6月30日止，已查復面積為3,036公頃，尚未查復面積為710公頃。自115年起逐年改正20%，目標於120年前全部完成改正。"}),
+ build:()=>({d:DOCS.nb6,sec:"農村建設工程／農村再生工程設施體檢與維護",pg:PG.建設工程.v6,ex:"115年度核定區域亮點工程計136件，總經費8.9億元，計服務126個社區，改善社區道路及通行環境約28公里。115年度設施體檢預計擴大辦理460件。"}),
+ checkup:()=>({d:DOCS.nb6,sec:"農村再生工程設施體檢與維護",pg:PG.建設工程.v6,ex:FMAP.checkup.ex}),
+ green:()=>({d:DOCS.nb6,sec:"農村社區綠色照顧(109年起)",pg:PG.綠色照顧.v6,ex:FMAP.green.ex}),
+ enterprise:()=>({d:DOCS.nb6,sec:"農村社區企業經營輔導計畫(105年起)",pg:PG.企業輔導.v6,ex:FMAP.enterprise.ex}),
+ focus:()=>({d:DOCS.nb6,sec:"農村發展重點區",pg:PG.重點區.v6,ex:FMAP.focus.ex}),
+ gold:()=>({d:DOCS.nb6,sec:"金牌農村競賽(106年起)",pg:PG.金牌農村.v6,ex:FMAP.gold.ex}),
+ culture:()=>({d:DOCS.nb6,sec:"農村文化保存",pg:PG.文化保存.v6,ex:FMAP.culture.ex}),
+ roadHist:v=>({d:nbDoc(v),sec:"重劃區外緊急農路設施改善計畫",pg:PG.農路[v],ex:FMAP.roadHist.ex}),
+ plandS:()=>({d:DOCS.nb6,sec:"公地放領",pg:PG.公地放領.v6,ex:FMAP.plandS.ex}),
+ law:()=>({d:DOCS.nb6,sec:"水保法及山保條例修法",pg:PG.修法.v6,ex:"立法院經濟委員會115年5月7日審查委員及黨團提案水保法及山保條例修正草案，決議將另擇期審查。農業部意見：一、調高罰鍰及罰金上限，有助於遏止重大違規案件，原則支持。二、低強度或小規模之違規行為，不宜微罪重罰…建議維持現行規定。三、…建議維持按次處罰。"}),
+ pv:()=>({d:DOCS.ly,sec:"農地容許作綠能設施相關規定／變更農業用地設置太陽光電設施案之辦理情形",pg:null,ex:"欣雄公司近期申請太陽光電開發案(共84公頃)，皆為山坡地保育區農牧用地，且全區皆為石虎重要棲地範圍…本部於115年2月26日(農村水保署)及115年3月26日(農糧署)，已針對該二案函復經濟部不同意變更。另農業部已公告2,162公頃不利農業經營得設綠能設施之範圍。"}),
+ pland:()=>({d:DOCS.nb6,sec:"公地放領",pg:PG.公地放領.v6,ex:"行政院114年11月27日第3980次院會決議略以，本次重啟公地放領的範圍定為「國有平地耕地及邊際養殖用地」。內政部114年12月22日函略以…山坡地放領仍維持停辦。"}),
+ house:v=>({d:nbDoc(v),sec:"農業用地興建農舍現況及督導地方政府情形",pg:PG.農舍[v],ex:"要求每年度稽查件數應至少達到前一年度取得農舍使用執照件數之30%，持續督導地方政府落實農舍稽查作業。"}),
+ satoyama:v=>({d:nbDoc(v),sec:"推動臺灣里山生態農村實踐計畫（106年起）加入國際里山倡議夥伴",pg:PG.里山[v],ex:"已於106年6月22日發布本署成為里山倡議國際夥伴關係最新成員。全國80處潛力社區已有13處登上IPSI刊出社區案例。"}),
+ bud:()=>{const m=BUD.months[budIdx];return {d:DOCS[m.doc],sec:"總表（計畫別：可支用、分配、執行數、達成率、目標值）",pg:null,ex:"總計：全年度可支用23,156,719千元；"+m.lab+"執行數"+(BUD.total[m.id].exec*100000).toLocaleString()+"千元、達成率"+BUD.total[m.id].rate+"%、目標值34.54%。"}},
+ eng:()=>{const m=BUD.months[budIdx];return {d:DOCS[m.eng],sec:"核定率及決標率（表2）",pg:null,ex:"總計(不含丹娜絲)："+m.lab+"核定率"+BUD.proj.main[m.id][0]+"%、決標率"+BUD.proj.main[m.id][1]+"%（去年同期60.96%）。"}},
+ flow:()=>({d:DOCS.flow,sec:"第1階段（提報→分署工程審議→核定金額分流）／第2階段（預算書定稿→核定或備查）",pg:"共2頁",ex:"核定金額＞700萬元：分署函報本署核定；≦700萬元：分署核定並副知本署備查。★本署提供工程編號、✔開始管控60日上網發包。"})
+};
+
+/* ---- 搜尋同義詞 aliases ---- */
+const ALIAS={"光電":"太陽光電 綠能 漁電","綠能":"光電 太陽光電","農再":"農村再生","修法":"水保法 山保條例","專員":"防災專員","決標":"決標率 工程","堰塞湖":"堰塞湖","撤離":"疏散 警戒","預算":"執行率 達成率 經費","清疏":"野溪","IPSI":"里山","石虎":"光電 苗栗"};
+
+/* =====================================================================
+   狀態與渲染
+   ===================================================================== */
+let V="v6", budIdx=2, qaTopic="全部";
+const $=s=>document.querySelector(s);
+const fv=(id,v)=>{const f=FMAP[id];return f&&f.vals[v]!==undefined&&f.vals[v]!==null?f.vals[v]:null};
+const fsub=(id,v)=>{const f=FMAP[id];if(!f||!f.sub)return null;return typeof f.sub==="string"?f.sub:(f.sub[v]||null)};
+const fnote=(id,v)=>{const f=FMAP[id];return f&&f.notes&&f.notes[v]?f.notes[v]:null};
+function budOfVer(v){ /* 版本對應之預算月份（v4→4月底、v5→5月底、v6→6月底） */
+  return v==="v4"?BUD.months[0]:v==="v5"?BUD.months[1]:BUD.months[2];
+}
+function go(p){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.p===p));
+  document.querySelectorAll("section.page").forEach(s=>s.classList.toggle("show",s.id==="p-"+p));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.p));
+function tog(el){el.classList.toggle("open")}
+function focusSearch(){$("#q").focus()}
+
+/* ---- 版本切換 ---- */
+function setVersion(v){
+  V=v;
+  const ver=VERS[VIDX[v]];
+  $("#verSel").value=v;
+  $("#verCut").textContent="資料截至 "+ver.cut+"｜文件日期 "+ver.label;
+  if(v==="v4")budIdx=0;else if(v==="v5")budIdx=1;else budIdx=2;
+  renderAll();
+}
+function renderAll(){
+  renderVerInfo();renderHighlights();renderStrip();renderBudHome();
+  renderBiz();renderKPI();renderBudget();renderProj();renderTimeline();renderCompare();
+  /* 暫停：renderQuickQ();renderQA(); —— 備詢題庫頁暫停中，函式與資料（QAS）完整保留供日後恢復 */
+  if($("#q").value)doSearch($("#q").value);
+}
+
+/* ---- 首頁：版本資訊 ---- */
+function renderVerInfo(){
+  const ver=VERS[VIDX[V]], latest=VERS[VERS.length-1];
+  $("#verInfo").innerHTML=`
+   <div class="card kpi"><div class="lab">最新一期筆記本</div><div class="num" style="font-size:1.2rem">${latest.label}</div><div class="trend flat">目前檢視：${ver.label}</div></div>
+   <div class="card kpi"><div class="lab">本期資料涵蓋</div><div class="num" style="font-size:1.2rem">${ver.data}</div><div class="trend flat">截至 ${ver.cut}</div></div>
+   <div class="card kpi"><div class="lab">收錄文件</div><div class="num">15 <small>份</small></div><div class="trend flat">筆記本6・預算6・備詢1・流程1・其他1</div></div>
+   <div class="card kpi"><div class="lab">切換版本</div><div class="num" style="font-size:1rem;font-weight:600"><select onchange="setVersion(this.value)" style="width:100%">${VERS.map(x=>`<option value="${x.id}" ${x.id===V?"selected":""}>${x.label}</option>`).join("")}</select></div></div>`;
+}
+/* ---- 首頁：本期重點 ---- */
+function renderHighlights(){
+  const ver=VERS[VIDX[V]];
+  $("#hlDate").textContent="依 "+ver.label+" 版筆記本及附錄";
+  const cards=[];
+  cards.push({t:"本期主要更新",v:ver.add,s:null,cls:""});
+  if(V>="v4"){const m=budOfVer(V),d=BUD.total[m.id];
+    cards.push({t:"預算執行（"+m.lab+"）",v:"執行 "+d.exec.toFixed(2)+" 億・達成率 "+d.rate+"%（目標 "+BUD.goal+"%）",s:"bud",cls:d.rate>=BUD.goal?"":"warn"});}
+  else cards.push({t:"預算執行",v:"本期資料未收錄（附錄一自 115/05/13 版起提供）",s:null,cls:"ext"});
+  if(V==="v6"){
+    cards.push({t:"立法院關注",v:"水保法及山保條例修法（經委會 115.5.7 審查，另擇期）；公地放領：山坡地維持停辦",s:"law",cls:"warn"});
+    cards.push({t:"汛期防災整備",v:"演練進度 "+fv('drills',V)+" 場；教育訓練及首長座談已辦 27 場",s:"drills",cls:""});
+  }else if(V>="v4"){
+    cards.push({t:"立法院關注",v:"農地變更及容許作綠能設施使用（經委會談參 115.4.14）",s:"pv",cls:"warn"});
+    cards.push({t:"汛期防災整備",v:"演練進度 "+(fv('drills',V)||"—")+" 場；保全清冊 "+fv('residents',V)+" 人完成校核",s:"residents",cls:""});
+  }else{
+    cards.push({t:"潛勢資料公開",v:"115.1.14 公開潛勢溪流 1,753 條、大規模崩塌 94 處；警戒值調整 4 縣市 8 鄉鎮",s:"streams",cls:""});
+    cards.push({t:"防汛整備",v:"保全清冊 "+fv('residents',V)+" 人；重機械待命 198 處核定完成",s:"residents",cls:""});
+  }
+  $("#highlights").innerHTML=cards.map(c=>`
+   <div class="card intel ${c.cls}"><div class="t">${c.t}</div><div class="v">${c.v}</div>
+   ${c.s?`<span class="src" onclick="event.stopPropagation();showSrc('${c.s}')">📎 查看資料來源</span>`:""}</div>`).join("");
+}
+/* ---- 首頁：數字帶 ---- */
+function renderStrip(){
+  const ids=["streams","lands","residents","experts","monitor","spzone","stream-clean","g1h3","rural","build"];
+  $("#strip").innerHTML=ids.map(id=>{
+    const val=fv(id,V);
+    if(val===null)return `<button class="chip" style="background:#8B98A6"><div class="n">—</div><div class="l">${FMAP[id].lab}</div><div class="d">本期資料未收錄</div></button>`;
+    return `<button class="chip" onclick="showSrc('${id}')"><div class="n">${val}${FMAP[id].unit?" "+FMAP[id].unit:""}</div><div class="l">${FMAP[id].lab}</div><div class="d">截至 ${VERS[VIDX[V]].cut}・點看來源</div></button>`;
+  }).join("");
+}
+/* ---- 首頁：常用問題 ---- */
+function renderQuickQ(){
+  const pick=["q-bud","q-str","q-res","q-col","q-dan","q-law","q-pv","q-rural"];
+  $("#quickQ").innerHTML=pick.map(id=>{
+    const q=QAS.find(x=>x.id===id);
+    return `<button onclick="go('qa');setTopic('全部');openQA('${id}')">${q.q.length>18?q.q.slice(0,18)+"…":q.q}</button>`;
+  }).join("");
+}
+/* ---- 首頁：預算摘要 ---- */
+function renderBudBtns(elId,cb){
+  $(elId).innerHTML=BUD.months.map((m,i)=>`<button class="${i===budIdx?'on':''}" style="border:1px solid var(--line);background:${i===budIdx?'var(--navy)':'#fff'};color:${i===budIdx?'#fff':'var(--muted)'};border-radius:999px;padding:8px 16px;font-family:inherit;min-height:42px;cursor:pointer;font-size:.84rem;${i===budIdx?'font-weight:700':''}" onclick="budIdx=${i};renderBudHome();renderBudget();renderProj()">${m.lab}</button>`).join("");
+}
+function renderBudHome(){
+  renderBudBtns("#budBtnHome");
+  const m=BUD.months[budIdx],d=BUD.total[m.id];
+  const prev=budIdx>0?BUD.total[BUD.months[budIdx-1].id]:null;
+  $("#budHome").innerHTML=`
+   <div class="card kpi"><div class="lab">執行數</div><div class="num mono">${d.exec.toFixed(2)} <small>億</small></div><div class="trend ${prev?'down':'flat'}">${prev?'較前月 +'+(d.exec-prev.exec).toFixed(2)+' 億':'—'}</div></div>
+   <div class="card kpi"><div class="lab">達成率</div><div class="num mono">${d.rate}<small>%</small></div><div class="trend ${d.rate>=BUD.goal?'down':'up'}">目標 ${BUD.goal}%（${d.rate>=BUD.goal?'超前':'落後'} ${Math.abs(d.rate-BUD.goal).toFixed(2)}%）</div></div>
+   <div class="card kpi"><div class="lab">執行率</div><div class="num mono">${d.alloc}<small>%</small></div><div class="trend flat">分配數之執行比</div></div>`;
+}
+/* ---- 業務查詢 ---- */
+function renderBiz(){
+  $("#bizList").innerHTML=BIZ.map((b,i)=>`
+   <div class="card acc" onclick="tog(this)">
+     <div class="head"><h3>${b.t}</h3><span class="chev">▶</span></div>
+     <div class="body">${b.body(V)}
+     <br><span class="src" onclick="event.stopPropagation();showSrc('${b.sec==='防災整備'?'streams':b.sec==='野溪'?'stream-clean':b.sec==='農路'?'road':b.sec==='坡地監督'?'illegal':b.sec==='農村社區'?'rural':'leisure'}')">📎 查看資料來源</span></div>
+   </div>`).join("");
+}
+/* ---- KPI ---- */
+function kpiCard(id){
+  const pv=VIDX[V]>0?VERS[VIDX[V]-1].id:null;
+  const val=fv(id,V);
+  if(val===null)return `<div class="card kpi"><div class="lab">${FMAP[id].lab}</div><div class="num" style="font-size:1rem;color:var(--muted)">本期資料未收錄</div><span class="src" onclick="showSrc('${id}')">📎 其他版本來源</span></div>`;
+  const pval=pv?fv(id,pv):null;
+  let tr='<div class="trend flat">首期收錄</div>';
+  if(pval!==null&&pv){tr=pval===val?'<div class="trend flat">與前期相同</div>':`<div class="trend up">前期（${VERS[VIDX[pv]].label}）：${pval}${fnote(id,V)?'・'+fnote(id,V):''}</div>`}
+  const sub=fsub(id,V);
+  return `<div class="card kpi"><div class="lab">${FMAP[id].lab}</div><div class="num mono">${val}${FMAP[id].unit?' <small>'+FMAP[id].unit+'</small>':''}</div>${sub?'<div class="mini">'+sub+'</div>':''}${tr}<span class="src" onclick="showSrc('${id}')">📎 查看資料來源</span></div>`;
+}
+function renderKPI(){
+  const ids=["streams","lands","residents","experts","collapse114","monitor","illegal","spzone"];
+  $("#kpiCards").innerHTML=ids.map(kpiCard).join("");
+  /* 農村業務 KPI（第三階段新增；隨版本切換，缺項顯示本期未收錄） */
+  const rural=["rural","build","checkup","green","focus","leisure","tanma","enterprise","gold","culture","roadHist","plandS"];
+  $("#kpiRural").innerHTML=rural.map(kpiCard).join("");
+}
+/* ---- 預算全表 ---- */
+function renderBudget(){
+  renderBudBtns("#budBtn");
+  const m=BUD.months[budIdx],d=BUD.total[m.id];
+  const prev=budIdx>0?BUD.total[BUD.months[budIdx-1].id]:null;
+  $("#budKpi").innerHTML=`
+   <div class="card kpi"><div class="lab">全年可支用</div><div class="num mono">231.57 <small>億</small></div><div class="trend flat">附錄一總表</div></div>
+   <div class="card kpi"><div class="lab">執行數</div><div class="num mono">${d.exec.toFixed(2)} <small>億</small></div><div class="trend ${prev?'down':'flat'}">${prev?'較前月 +'+(d.exec-prev.exec).toFixed(2)+' 億':'首月收錄'}</div></div>
+   <div class="card kpi"><div class="lab">達成率</div><div class="num mono">${d.rate}<small>%</small></div><div class="trend ${d.rate>=BUD.goal?'down':'up'}">目標 ${BUD.goal}%・${d.rate>=BUD.goal?'超前':'落後'} ${Math.abs(d.rate-BUD.goal).toFixed(2)}%</div></div>
+   <div class="card kpi"><div class="lab">執行率</div><div class="num mono">${d.alloc}<small>%</small></div><div class="trend flat">${prev?'前月 '+prev.alloc+'%':''}</div></div>`;
+  $("#budgetBars").innerHTML=BUD.plans.map(p=>{
+    const cur=p[m.id],prevP=budIdx>0?p[BUD.months[budIdx-1].id]:null;
+    const dr=prevP?(cur[1]-prevP[1]).toFixed(2):null;
+    return `<div style="margin-bottom:12px">
+     <div style="display:flex;justify-content:space-between;font-size:.85rem;gap:6px;flex-wrap:wrap">
+       <span>${p.n} <span class="mini">（可支用 ${p.A} 億）</span></span>
+       <b class="mono" style="color:var(--navy)">${cur[0].toFixed(2)} 億・達成 ${cur[1]}%${dr?` <span class="delta ${dr>0?'dn':'eq'}">較前月 +${dr}%</span>`:''}</b>
+     </div>
+     <div class="bar"><i class="${p.n.includes('丹娜絲')?'gold':''}" style="width:${Math.min(cur[1],100)}%"></i></div>
+    </div>`;
+  }).join("");
+}
+/* ---- 工程決標 ---- */
+function renderProj(){
+  const m=BUD.months[budIdx];
+  const mk=(o)=>{const c=o[m.id],p=budIdx>0?o[BUD.months[budIdx-1].id]:null;
+   return `<div class="card"><b style="color:var(--navy);font-size:.92rem">${o.n}</b>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-top:8px"><span>核定率</span><b class="mono">${c[0]}%${p?' <span class="mini">(前月 '+p[0]+'%)</span>':''}</b></div>
+    <div class="bar"><i style="width:${Math.min(c[0],100)}%"></i></div>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-top:8px"><span>決標率</span><b class="mono">${c[1]}%${o.last?' <span class="mini">(去年同期 '+o.last+'%)</span>':(p?' <span class="mini">(前月 '+p[1]+'%)</span>':'')}</b></div>
+    <div class="bar"><i class="gold" style="width:${Math.min(c[1],100)}%"></i></div>
+    <span class="src" onclick="showSrc('eng')">📎 查看資料來源</span></div>`};
+  $("#projRate").innerHTML=mk(BUD.proj.main)+mk(BUD.proj.dan);
+}
+/* ---- 備詢題庫 ---- */
+function setTopic(t){qaTopic=t;renderQA()}
+function renderQA(openId){
+  $("#qaTopics").innerHTML=TOPICS.map(t=>`<button class="${t===qaTopic?'on':''}" onclick="setTopic('${t}')">${t}</button>`).join("");
+  const list=QAS.filter(q=>qaTopic==="全部"||q.tp===qaTopic);
+  $("#qaList").innerHTML=list.map(x=>{
+    const avail=VIDX[V]>=VIDX[x.minV];
+    const srcInfo=SRC[x.src]?SRC[x.src](V):null;
+    if(!avail)return `<div class="card qa" style="margin-bottom:12px;opacity:.75">
+      <div class="q">Q：${x.q} <span class="badge na">本期資料未收錄</span></div>
+      <div class="na-text" style="margin-top:6px">此問答之依據文件自 ${VERS[VIDX[x.minV]].label} 版起收錄；請切換至該版本或之後版本查閱。</div></div>`;
+    return `<div class="card acc qa" id="qa-${x.id}" onclick="tog(this)" style="margin-bottom:12px">
+     <div class="head"><h3 class="q">Q：${x.q}${x.hot?'<span class="badge hot">🔥 立院／院層關注</span>':''}<span class="badge ok">${x.tp}</span></h3><span class="chev">▶</span></div>
+     <div class="body">
+       <div class="ans">${x.ans(V)}</div>
+       <div class="nums">${x.nums(V).map(n=>`<div><b class="mono">${n[0]}</b><span>${n[1]}</span></div>`).join("")}</div>
+       ${x.tone?`<div class="tone"><b>⚠ </b>${x.tone}</div>`:""}
+       ${x.note?`<div class="note">${x.note}</div>`:""}
+       <div class="mini">問題版本：${VERS[VIDX[V]].label}｜資料日期：${srcInfo?srcInfo.d.date:VERS[VIDX[V]].label}</div>
+       <span class="src" onclick="event.stopPropagation();showSrc('${x.src}')">📎 查看資料來源</span>
+     </div></div>`;
+  }).join("")||'<div class="empty">此主題暫無收錄問答</div>';
+  if(openId)openQA(openId);
+}
+function openQA(id){const el=document.getElementById("qa-"+id);if(el){el.classList.add("open");if(el.scrollIntoView)el.scrollIntoView({block:"center"})}}
+/* ---- 歷次版本時間軸 ---- */
+function renderTimeline(){
+  $("#verTl").innerHTML=[...VERS].reverse().map(x=>`
+   <div class="ev ${x.id===V?'cur':''}" onclick="setVersion('${x.id}')">
+     <div class="y">${x.label}${x.id===V?'（檢視中）':''}</div>
+     <div class="tt">署長筆記本｜資料月份 ${x.data}</div>
+     <div class="d">${x.add}</div>
+   </div>`).join("");
+}
+/* ---- 版本比較 ---- */
+function renderCompare(){
+  const selA=$("#cmpA"),selB=$("#cmpB");
+  if(!selA.options.length){
+    VERS.forEach(x=>{selA.add(new Option(x.label,x.id));selB.add(new Option(x.label,x.id))});
+    selA.value="v1";selB.value="v6";
+    selA.onchange=selB.onchange=doCompare;
+  }
+  doCompare();
+}
+function doCompare(){
+  const a=$("#cmpA").value,b=$("#cmpB").value;
+  if(a===b){$("#cmpOut").innerHTML='<div class="empty">請選擇兩個不同版本</div>';return}
+  const A=VIDX[a]<VIDX[b]?a:b, B=VIDX[a]<VIDX[b]?b:a; /* A=較早 */
+  const vA=VERS[VIDX[A]],vB=VERS[VIDX[B]];
+  let html="";
+  /* 數字變動 */
+  const chg=[],same=[],naA=[],naB=[];
+  FACTS.forEach(f=>{
+    const x=fv(f.id,A),y=fv(f.id,B);
+    if(x===null&&y===null)return;
+    if(x===null){naA.push(f);return}
+    if(y===null){naB.push(f);return}
+    const sx=fsub(f.id,A),sy=fsub(f.id,B);
+    if(x===y&&sx===sy)same.push(f);else chg.push({f,x,y,sx,sy});
+  });
+  html+=`<div class="card" style="margin-bottom:12px"><b style="color:var(--navy)">數字變動（${vA.label} → ${vB.label}）</b>`;
+  html+=chg.length?chg.map(c=>{
+    const note=c.f.notes?Object.entries(c.f.notes).filter(([k])=>VIDX[k]>VIDX[A]&&VIDX[k]<=VIDX[B]).map(([,n])=>n).join("；"):"";
+    return `<div class="cmpRow"><span class="nm">${c.f.lab}${note?` <span class="badge warn">${note}</span>`:""}</span>
+     <span class="vv"><span class="a mono">${c.x}${c.sx&&c.sx!==c.sy?'（'+c.sx+'）':''}</span> → <span class="b mono">${c.y}${c.sy&&c.sx!==c.sy?'（'+c.sy+'）':''}</span></span></div>`;
+  }).join(""):'<div class="na-text" style="margin-top:8px">兩期關鍵數字無變動</div>';
+  html+=`</div>`;
+  /* 新增/僅早期收錄 */
+  if(naA.length)html+=`<div class="card" style="margin-bottom:12px"><b style="color:var(--navy)">本期新增之數據（${vA.label} 版未收錄）</b>${naA.map(f=>`<div class="cmpRow"><span class="nm">${f.lab}</span><span class="vv"><span class="badge na">前期未收錄</span> → <span class="b mono">${fv(f.id,B)}</span></span></div>`).join("")}</div>`;
+  if(naB.length)html+=`<div class="card" style="margin-bottom:12px"><b style="color:var(--navy)">後期未收錄之數據</b>${naB.map(f=>`<div class="cmpRow"><span class="nm">${f.lab}</span><span class="vv"><span class="a mono">${fv(f.id,A)}</span> → <span class="badge na">本期未收錄</span></span></div>`).join("")}</div>`;
+  /* 章節結構 */
+  if(SECTIONS[A]&&SECTIONS[B]){
+    const add=SECTIONS[B].filter(s=>!SECTIONS[A].includes(s)&&!RENAME.some(r=>r[1]===s));
+    const del=SECTIONS[A].filter(s=>!SECTIONS[B].includes(s)&&!RENAME.some(r=>r[0]===s));
+    html+=`<div class="card" style="margin-bottom:12px"><b style="color:var(--navy)">章節架構比較</b>
+     <div class="mini" style="margin:6px 0">兩期章節架構不同，以下依相近主題整理。</div>
+     ${add.length?'<div class="note"><b style="color:var(--ok)">＋新增章節：</b>'+add.join("、")+'</div>':''}
+     ${del.length?'<div class="note"><b style="color:var(--alert)">－刪除章節：</b>'+del.join("、")+'</div>':''}
+     ${RENAME.map(r=>`<div class="note"><b style="color:#8A6D0B">✎文字修正：</b>「${r[0]}」→「${r[1]}」（${r[2]}）</div>`).join("")}
+     <div class="mini">無變動章節：${SECTIONS[A].filter(s=>SECTIONS[B].includes(s)).length} 節（防災整備、警戒發布、坡地監督、農村社區、休閒產業等主要章節架構延續）</div></div>`;
+  }else{
+    html+=`<div class="card" style="margin-bottom:12px"><b style="color:var(--navy)">章節架構比較</b>
+     <div class="na-text" style="margin-top:6px">此組版本之完整章節目錄未逐一收錄於本系統，僅比對上列關鍵數字；完整結構差異請調閱原始文件（${vA.label} 與 ${vB.label} 版）。系統目前收錄 115/02/28 與 115/07/10 兩版完整目錄，選擇該組合可檢視章節增刪。</div></div>`;
+  }
+  /* 無變動 */
+  html+=`<div class="card"><b style="color:var(--navy)">本期無變動內容</b><div class="note">${same.map(f=>f.lab).join("、")||"—"}</div><div class="mini">差異比較僅呈現文件記載之具體資料，不推測政策意義。</div></div>`;
+  $("#cmpOut").innerHTML=html;
+}
+/* ---- 來源面板 ---- */
+function showSrc(key){
+  const fn=SRC[key];if(!fn)return;
+  const s=fn(V);
+  $("#mBody").innerHTML=`<h4>📎 資料來源</h4>
+   <div class="row"><b>文件名稱</b><span>${s.d.name}</span></div>
+   <div class="row"><b>文件日期</b><span>${s.d.date}</span></div>
+   <div class="row"><b>資料類型</b><span>${s.d.type}</span></div>
+   <div class="row"><b>資料版本</b><span>${VERS[VIDX[V]].label}（涵蓋 ${VERS[VIDX[V]].data}）</span></div>
+   <div class="row"><b>所屬章節</b><span>${s.sec}</span></div>
+   <div class="row"><b>頁碼</b><span>${s.pg?("第 "+s.pg+" 頁"):"—（該檔無頁碼或本版未標示）"}</span></div>
+   <div class="ex">「${s.ex}」</div>`;
+  $("#modalBg").style.display="block";$("#modal").style.display="block";
+}
+function closeSrc(){$("#modalBg").style.display="none";$("#modal").style.display="none"}
+
+/* =====================================================================
+   搜尋（Answer-first；僅查已納入之正式資料）
+   ===================================================================== */
+function expand(kw){let e=kw;Object.keys(ALIAS).forEach(k=>{if(kw.includes(k))e+=" "+ALIAS[k]});return e}
+function searchFor(kw){$("#q").value=kw;doSearch(kw);go("search")}
+function doSearch(raw){
+  const kw=raw.trim();
+  const box=$("#answerBox"),res=$("#results");
+  if(!kw){box.style.display="none";res.innerHTML='<div class="empty">請於上方輸入關鍵字</div>';return}
+  const ekw=expand(kw);
+  /* 直達答案：facts */
+  const hitF=FACTS.find(f=>(f.lab+" "+f.kw).split(/\s+/).some(t=>t&&(kw.includes(t)||t.includes(kw)))&&fv(f.id,V)!==null);
+  if(hitF){
+    box.style.display="block";
+    box.innerHTML=`<div class="card"><div style="font-size:.72rem;color:var(--gold);font-weight:700;letter-spacing:.15em">💡 直達答案（${VERS[VIDX[V]].label} 版）</div>
+      <div style="font-size:1.02rem;font-weight:700;color:var(--navy);margin:6px 0">${hitF.lab}：${fv(hitF.id,V)}${hitF.unit||""}${fsub(hitF.id,V)?'（'+fsub(hitF.id,V)+'）':''}</div>
+      <span class="src" onclick="showSrc('${hitF.id}')">📎 查看資料來源</span></div>`;
+  }else box.style.display="none";
+  /* 結果池 */
+  const pool=[];
+  FACTS.forEach(f=>pool.push({type:"關鍵數字",t:f.lab,d:(fv(f.id,V)||"本期未收錄")+(fsub(f.id,V)?"（"+fsub(f.id,V)+"）":""),kw:f.lab+" "+f.kw+" "+f.ex,src:f.id,ver:VERS[VIDX[V]].label,score:2}));
+  /* 暫停：備詢題庫搜尋索引（備詢頁暫停中，避免結果出現指向已移除頁面之連結）
+  QAS.forEach(q=>{if(VIDX[V]>=VIDX[q.minV])pool.push({type:"備詢題庫",t:q.q,d:q.ans(V),kw:q.q+" "+q.tp+" "+(q.note||""),src:q.src,ver:VERS[VIDX[V]].label,score:3,qa:q.id})});
+  */
+  BIZ.forEach(b=>pool.push({type:"業務主題",t:b.t,d:b.body(V).slice(0,90)+"…",kw:b.t+" "+b.kw,src:null,ver:VERS[VIDX[V]].label,score:1}));
+  pool.push({type:"流程文件",t:"保育治理及農路設施改善工程核定(備查)作業流程",d:"兩階段流程；核定金額700萬元為分署核定備查與函報本署核定之分工門檻。",kw:"流程 核定 備查 工程 農路 保育治理 700萬",src:"flow",ver:"113.7.5版",score:2});
+  const terms=ekw.split(/\s+/).filter(Boolean);
+  const m=pool.map(p=>{const hay=(p.kw+p.t+p.d);let sc=0;terms.forEach(t=>{if(hay.includes(t))sc+=p.score});return {...p,sc}}).filter(p=>p.sc>0).sort((x,y)=>y.sc-x.sc).slice(0,12);
+  res.innerHTML=m.length?m.map(p=>`
+    <div class="card" style="margin-bottom:10px">
+      <div class="mini">${p.type}｜版本 ${p.ver}</div>
+      <b style="color:var(--navy)">${p.t.replace(kw,'<span class="hl">'+kw+'</span>')}</b>
+      <div style="font-size:.85rem;color:var(--ink);margin-top:4px">${p.d.replace(kw,'<span class="hl">'+kw+'</span>')}</div>
+      <div style="margin-top:6px">${p.src?`<span class="src" onclick="showSrc('${p.src}')">📎 查看來源</span>`:""}
+      </div><!-- 暫停：↗查看原文問答 跳轉（備詢頁暫停中） -->
+    </div>`).join("")
+   :`<div class="empty">目前提供的知識庫中查無「${kw}」相關資料。<br><span class="mini">系統不會使用外部資料或自行推測答案；本功能僅查詢已納入的署內正式資料，不連線、不使用外部資訊。</span></div>`;
+}
+$("#q").addEventListener("input",e=>{doSearch(e.target.value);if(e.target.value)go("search")});
+$("#q").addEventListener("focus",()=>{if($("#q").value)go("search")});
+
+/* ---- 初始化 ---- */
+document.addEventListener('touchstart',function(){},{passive:true});
+VERS.forEach(x=>$("#verSel").add(new Option(x.label+"（"+x.data+"）",x.id)));
+setVersion("v6");
+</script>
+</body>
+</html>
